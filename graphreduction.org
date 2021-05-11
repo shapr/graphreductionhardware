@@ -1,0 +1,110 @@
+#+TITLE: Graph Reduction Hardware
+#+AUTHOR: Shae M Erisson
+#+EMAIL: shae+graph@ScannedInAvian.com
+#+DATE: 2021-05-11
+#+DESCRIPTION: What is graph reduction? Why should you care?
+#+LANGUAGE: en
+#+OPTIONS: H:2 num:t toc:t
+#+LaTeX_CLASS: beamer
+#+LaTeX_CLASS_OPTIONS: [presentation]
+#+latex_header: \hypersetup{colorlinks=true,linkcolor=blue}
+#+BEAMER_THEME: Madrid
+#+BEAMER_FRAME_LEVEL: 2
+#+COLUMNS: %40ITEM %10BEAMER_env(Env) %9BEAMER_envargs(Env Args) %4BEAMER_col(Col) %10BEAMER_extra(Extra)
+
+* What?
+** What is graph reduction?
+- A graph is nodes connected by edges.
+#+begin_src dot :file graph.png :cmdline -Kdot -Tpng
+  graph ""
+  #node[fontsize=4,width=".2",height=".2", margin=0];
+  #graph[fontsize=2];
+  {
+      n02;
+      n02 [label="+"];
+      n02 -- n03;
+      n03 [label="2"];
+      n02 -- n04;
+      n04 [label="2"];
+  }
+#+end_src
+
+#+attr_latex: :width 2cm
+#+RESULTS:
+[[file:node.png]]
+
+- A graph describing a computation is reduced to give a result.
+- The computation 2 + 2 can be seen as the following graph.
+#+begin_src dot :file node.png :cmdline -Kdot -Tpng
+  graph ""
+  #node[fontsize=4,width=".2",height=".2", margin=0];
+  #graph[fontsize=2];
+  {
+      n02;
+      n02 [label="4"];
+  }
+#+end_src
+
+#+attr_latex: :width 2cm
+#+RESULTS:
+[[file:node.png]]
+
+- This boring graph unsurprisingly reduces to "4".
+* Why?
+** You want your laptop to go longer on less battery
+- Past a certain point small increases in CPU speed require large increases in power and cooling.
+- for details see \href{https://physics.stackexchange.com/questions/34766/how-does-power-consumption-vary-with-the-processor-frequency-in-a-typical-comput}{power is supralinear in frequency}.
+* How?
+** We have to go parallel
+- Parallel is spreading the work across multiple CPUs
+- More not-so-fast cores increases total CPU power without unreasonable increases in power and cooling requirements.
+- We can't get better performance-per-watt CPUs without [[https://superuser.com/questions/152011/why-multi-core-processors][multicore processors]].
+- You could pay many thousands of dollars to get a really fast CPU, or buy a bunch of slower CPUs for a much smaller total price.
+* Aren't we already?
+** Languages are not good at parallel
+- C and most of its descendants were designed to work on [[https://queue.acm.org/detail.cfm?id=3212479][one core]]. Those languages cannot easily use multiple cores.
+- How do you make your Python code faster? (call out to [[https://en.wikipedia.org/wiki/OpenMP][something else]], often another Python process)
+** Graph reduction is Haskell, graph reduction is good at parallel
+- Almost all our society's programs have relied on one single CPU getting faster over time. That's unlikely to return.
+- graph reduction is good at parallel, usually multiple parts of the graph can be reduced at the same time
+- Haskell is graph reduction, because lambda calculus!
+** Existing hardware is not so good at parallel
+- [[https://dl.acm.org/doi/abs/10.1145/359576.359579][Can programming be liberated from the von Neumann style?]] 1978 John Backus
+- We can write code that uses multiple cores, but it's not easy
+- Even then, all these cores still pretend to be one fast CPU! They have the same view of main memory! More cores means more overhead [[https://en.wikipedia.org/wiki/Cache_coherence][synchronizing]] the shared view of memory.
+** Design your own CPU with reconfigurable hardware!
+- You can design your own computer chips with an [[https://tomu.im/fomu.html][FPGA]]!
+  [[./fomu.jpg]]
+** FPGAs can do parallel
+- TIGRE (1992) - https://users.ece.cmu.edu/~koopman/tigre/index.html
+  At that time, sequential CPU speed was still increasing, decided special purpose chips couldn't keep up
+- Reduceron (2010) - CPU designed to do graph reduction
+- PilGRIM (2010) - builds on Reduceron, includes [[https://staff.fnwi.uva.nl/c.u.grelck/nl-fp-talks/boeijink.pdf][pipelining]], closer to existing CPUs
+* Existing Research
+** Reduceron
+- The [[https://www.cs.york.ac.uk/fp/reduceron/][Reduceron]] (2008-2010) is an open source design that runs on an FPGA.
+- designed for a *much* wider data bus than x86
+- Each instruction does more work
+- Programs running on an FPGA at 90MHz could outperform a 2GHz x86 system
+- Proof of concept, not production quality, programs can't have input!
+- small group updating (2020) Reduceron on GitHub https://github.com/tommythorn/Reduceron
+** PilGRIM - Pipelined Graph Reduction Instruction Machine
+- The PilGRIM (2010) built on the success of the Reduceron
+- deep pipeline is closer to existing hardware
+** Will this ever reach mass produced hardware?
+- Might already exist with the [[https://www.graphcore.ai/products/ipu][Graphcore IPU]] products!
+- starter kit is $20,000 USD
+- 1472 tiny CPUs with small amounts of local memory
+- 47 TB/s memory bandwidth per CPU
+- available from Microsoft Azure, but I haven't tried it.
+* Questions?
+** Questions? Thoughts? Bonus content?
+- Graph reduction isn't the only approach to implicit parallelism
+- Graph reduction doesn't create parallelism in a problem that isn't parallel
+- Cycle count from CPU to main memory [[https://blog.royalsloth.eu/posts/the-compiler-will-optimize-that-away/][continues to increase]]
+- graph reduction decreases the need for cache coherency? [[https://www.microsoft.com/en-us/research/wp-content/uploads/2005/09/2005-haskell.pdf][lock free mechanism for evaluating shared thunks]]
+- What about graph reduction GPUs? I don't know, good question.
+- Does custom/offbeat/niche hardware ever succeed? GPUs and DSPs are popular, also many failures
+** FPGA floorplans look really cool
+- FPGA floorplan viewer! https://knielsen.github.io/ice40_viewer/ice40_viewer.html Wow!
+[[./ice40.png]]

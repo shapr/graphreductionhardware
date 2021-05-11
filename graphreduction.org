@@ -76,21 +76,20 @@
 - You can design your own computer chips with an [[https://tomu.im/fomu.html][FPGA]]!
   [[./fomu.jpg]]
 ** FPGAs can do parallel
-- TIGRE (1992) - https://users.ece.cmu.edu/~koopman/tigre/index.html
-  At that time, sequential CPU speed was still increasing, decided special purpose chips couldn't keep up
+- [[https://users.ece.cmu.edu/~koopman/tigre/index.html][TIGRE]] (1992) - At that time, sequential CPU speed was still increasing, decided special purpose chips couldn't keep up
 - Reduceron (2010) - CPU designed to do graph reduction
 - PilGRIM (2010) - builds on Reduceron, includes [[https://staff.fnwi.uva.nl/c.u.grelck/nl-fp-talks/boeijink.pdf][pipelining]], closer to existing CPUs
 * Existing Research
 ** Reduceron
 - The [[https://www.cs.york.ac.uk/fp/reduceron/][Reduceron]] (2008-2010) is an open source design that runs on an FPGA.
 - designed for a *much* wider data bus than x86
-- Each instruction does more work
+- Each instruction does more work, 6 reductions per clock cycle!
 - Programs running on an FPGA at 90MHz could outperform a 2GHz x86 system
 - Proof of concept, not production quality, programs can't have input!
 - small group updating (2020) Reduceron on GitHub https://github.com/tommythorn/Reduceron
 ** PilGRIM - Pipelined Graph Reduction Instruction Machine
-- The PilGRIM (2010) built on the success of the Reduceron
-- deep pipeline is closer to existing hardware
+- The [[https://www.researchgate.net/profile/Philip_Hoelzenspies/publication/221600549_Introducing_the_PilGRIM_A_Processor_for_Executing_Lazy_Functional_Languages/links/09e415065706fee6a7000000/Introducing-the-PilGRIM-A-Processor-for-Executing-Lazy-Functional-Languages.pdf][PilGRIM]] (2010) built on the success of the Reduceron
+- deep pipeline with the goal of pushing Reduceron's ~90MHz towards 1GHz
 ** Will this ever reach mass produced hardware?
 - Might already exist with the [[https://www.graphcore.ai/products/ipu][Graphcore IPU]] products!
 - starter kit is $20,000 USD
@@ -103,8 +102,8 @@
 - Graph reduction doesn't create parallelism in a problem that isn't parallel
 - Cycle count from CPU to main memory [[https://blog.royalsloth.eu/posts/the-compiler-will-optimize-that-away/][continues to increase]]
 - graph reduction decreases the need for cache coherency? [[https://www.microsoft.com/en-us/research/wp-content/uploads/2005/09/2005-haskell.pdf][lock free mechanism for evaluating shared thunks]]
-- What about graph reduction GPUs? I don't know, good question.
-- Does custom/offbeat/niche hardware ever succeed? GPUs and DSPs are popular, also many failures
+- What about doing graph reduction on GPUs? I don't know, maybe you know?
+- Does custom/offbeat/niche hardware ever succeed? GPUs and DSPs yes, also many failures
 ** FPGA floorplans look really cool
 - FPGA floorplan viewer! https://knielsen.github.io/ice40_viewer/ice40_viewer.html Wow!
 [[./ice40.png]]
